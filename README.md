@@ -2,9 +2,9 @@
 
 ## Participants
 
-Antal Péter  
-Liska Tamás  IWGB4I
-Prohászka Botond Bendegúz    DG42069
+Antal Péter  ZE4SG8
+<br> Liska Tamás  IWGB4I
+<br> Prohászka Botond Bendegúz  DG42069
 
 ## Description
 
@@ -40,4 +40,5 @@ https://www.kaggle.com/code/philculliton/inferring-birds-with-kaggle-models
 
 ## How to run
 
-Todo
+* Install python3 and pip
+* Todo
