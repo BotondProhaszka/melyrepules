@@ -4,49 +4,34 @@ import numpy as np
 import os
 import librosa
 
+from sklearn.model_selection import train_test_split
+
 import tensorflow as tf
 import glob
 
 
-class MyDataGenerator():
-  def __init__(self, dffilepath, batch_size=10, shuffle=True, train_ratio=0.7, val_ratio=0.2, test_ratio=0.1):
-    self.rootfolder = dffilepath
-    self.df = pd.read_csv(dffilepath + 'train_metadata.csv')
-    self.batch_size = batch_size
-    self.n = len(self.df)
+
+
+def get_label_map(df_column):
+    labels = set(df_column)
+    label_map = {label: i for i, label in enumerate(labels)}
+    print(df_column.value_counts())
+    return label_map
+
+
+
+class BirdCLEF_DataGenerator():
+  def __init__(self, df, label_dict, root_folder, batch_size=10, shuffle=True):
     
+    self.batch_size = batch_size
+
+    self.df = df
+    self.n = len(self.df)
+    self.label_dict = label_dict
+    self.rootfolder = root_folder
     self.wrong_sample_num = 0
-
-    self.label_dict = self.get_label_map(self.df['scientific_name'])
-
     if shuffle:
       self.df = self.df.sample(frac=1).reset_index(drop=True)
-    
-    # Az adatok szétválasztása a train, val és test részekre
-    self.train_df, self.val_df, self.test_df = self.split_data(train_ratio, val_ratio, test_ratio)
-
-    print('Train size: ', len(self.train_df))
-    print('Validation size: ', len(self.val_df))
-    print('Test size: ', len(self.test_df))
-    print('Total size: ', len(self.train_df) + len(self.val_df) + len(self.test_df))
-    print('Total size2: ', len(self.df))
-
-  def split_data(self, train_ratio, val_ratio, test_ratio):
-      # Az egyes részek mérete
-      train_size = int(self.n * train_ratio)
-      val_size = int(self.n * val_ratio)
-      test_size = self.n - train_size - val_size
-
-      # A df DataFrame véletlenszerű megkeverése
-      self.df = self.df.sample(frac=1).reset_index(drop=True)
-
-      # A train, val és test részek kivágása
-      train_df = self.df[:train_size]
-      val_df = self.df[train_size:train_size + val_size]
-      test_df = self.df[train_size + val_size:]
-
-      return train_df, val_df, test_df
-
 
 
 
@@ -70,12 +55,6 @@ class MyDataGenerator():
   def on_epoch_end(self):
       self.train_df = self.train_df.sample(frac=1).reset_index(drop=True)
 
-
-  def get_label_map(self, df_column):
-    labels = set(df_column)
-    label_map = {label: i for i, label in enumerate(labels)}
-    print(df_column.value_counts())
-    return label_map
 
 
   def open_wawe(self, filepath):
@@ -130,11 +109,33 @@ class MyDataGenerator():
           waveform = self.resample(waveform, desired_sample_rate, original_sample_rate)
       return desired_sample_rate, waveform
 
-datagenerator = MyDataGenerator('/app/data/')
 
-a = datagenerator[0]
-b = datagenerator[1]
+BATCH_SIZE = 10
 
-print('Dict: ', datagenerator.label_dict)
+df = pd.read_csv('data/train_metadata.csv')
 
-print('Wrong sample num: ', datagenerator.wrong_sample_num)
+label_dict = get_label_map(df['scientific_name'])
+
+
+train_df, test_df = train_test_split(df, test_size=0.2, random_state=0)
+train_df, val_df = train_test_split(train_df, test_size=0.25, random_state=0)
+
+
+print('Train size: ', len(train_df))
+print('Validation size: ', len(val_df))
+print('Test size: ', len(test_df))
+print('Total size: ', len(train_df) + len(val_df) + len(test_df))
+print('Total size2: ', len(df))
+
+
+train_generator = BirdCLEF_DataGenerator(train_df, label_dict,'data/', batch_size=BATCH_SIZE)
+val_generator = BirdCLEF_DataGenerator(val_df, label_dict, 'data/', batch_size=BATCH_SIZE)
+test_generator = BirdCLEF_DataGenerator(test_df, label_dict, 'data/', batch_size=BATCH_SIZE)
+
+
+a = train_generator[0]
+b = train_generator[1]
+
+print('Dict: ', label_dict)
+
+print('Wrong sample num: ', train_generator.wrong_sample_num)
