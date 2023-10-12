@@ -24,8 +24,6 @@ We downloaded the datapack from the website of the competiton and integrated int
 
 In data_preparation.py file we implemented a basic data generator class in order to make the dataset available to other containers (e.g. models). The data generator class can resample a wave to a desired rate. We create three instances of the generator class: for the training, validation and test datasets.
 
-Related works:
-
 
 ### data_prep/Dockerfile
 
