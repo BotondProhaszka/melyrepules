@@ -2,9 +2,9 @@
 
 ## Participants
 
-Antal Péter  
-Liska Tamás  IWGB4I
-Prohászka Botond Bendegúz    DG42069
+* Antal Péter  ZE4SG8
+* Liska Tamás  IWGB4I
+* Prohászka Botond Bendegúz  DG1647
 
 ## Description
 
@@ -20,7 +20,10 @@ For this competition, you'll use your machine-learning skills to identify Easter
 
 ### data_prep/data_preparation.py
 
-Todo
+We downloaded the datapack from the website of the competiton and integrated into the data preparation docker container.
+
+In data_preparation.py file we implemented a basic data generator class in order to make the dataset available to other containers (e.g. models). The data generator class can resample a wave to a desired rate. We create three instances of the generator class: for the training, validation and test datasets.
+
 
 ### data_prep/Dockerfile
 
@@ -35,9 +38,12 @@ Describes each library version required in the project.
 Contains the files and librarys we do not intend to upload to github.
 
 ## Related works
+* The [dataset](https://www.kaggle.com/competitions/birdclef-2023/data)
+* [Opening and resampling the waves](https://www.kaggle.com/code/philculliton/inferring-birds-with-kaggle-models)
+* For the ```resampling``` function we used [Google Bard](bard.google.com/) 
 
-https://www.kaggle.com/code/philculliton/inferring-birds-with-kaggle-models
 
 ## How to run
 
-Todo
+* Install python3 and pip
+* Todo
