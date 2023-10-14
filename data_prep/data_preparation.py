@@ -139,3 +139,4 @@ b = train_generator[1]
 print('Dict: ', label_dict)
 
 print('Wrong sample num: ', train_generator.wrong_sample_num)
+
