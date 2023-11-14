@@ -4,6 +4,7 @@ import numpy as np
 import os
 import librosa
 import glob
+import math
 
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
@@ -12,6 +13,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+import pytorch_lightning as pl
+
 
 
 def get_label_map(df_column):
@@ -20,6 +23,7 @@ def get_label_map(df_column):
     print(df_column.value_counts())
     return label_map
 
+ # :) -> not really
 
 class BirdCLEF_DataGenerator():
     def __init__(self, df, label_dict, root_folder, batch_size=10, shuffle=True):
@@ -27,6 +31,7 @@ class BirdCLEF_DataGenerator():
         self.train_df = None
         self.batch_size = batch_size
 
+        df = self.transform_df(df)
         self.df = df
         self.n = len(self.df)
         self.label_dict = label_dict
@@ -47,10 +52,33 @@ class BirdCLEF_DataGenerator():
         labels = []
         for index, row in batch_df.iterrows():
             wawe = self.open_wawe(row['filename'])
-            sounds.append(wawe)
-            labels.append(self.label_dict[row['scientific_name']])
-
+            for i in range(len(wawe)):
+                sounds.append(wawe[i])
+                labels.append(self.label_dict[row['scientific_name']])
+        
+        sounds = tf.convert_to_tensor(sounds)
+        print("Get_item - Sound shape: ", sounds.shape)
+        labels = tf.convert_to_tensor(labels)
+        print("Get_item - Labels shape: ", labels.shape)
         return sounds, labels
+    
+    def get_wawe_len(self, filepath):
+        try:
+                audio, sample_rate = librosa.load('data/' + '/train_audio/' + filepath)
+                wav_len = math.ceil(librosa.get_duration(y=audio, sr=sample_rate)/5)
+                return wav_len 
+
+        except Exception as e:
+                print(f"Error processing {filepath}: {e}")
+                return None
+
+    def transform_df(self, df):
+        new_df = df.copy()
+        new_df['audio_length'] = new_df['filename'].apply(lambda x: self.get_wawe_len(filepath=x) )
+
+        new_df_expanded = new_df.loc[new_df.index.repeat(new_df['audio_length'])].reset_index(drop=True)
+        new_df_expanded['audio_part'] = new_df_expanded.groupby('filename').cumcount()
+        return new_df_expanded
 
     def on_epoch_end(self):
         self.train_df = self.train_df.sample(frac=1).reset_index(drop=True)
@@ -194,8 +222,34 @@ val_generator = BirdCLEF_DataGenerator(val_df, label_dict, 'data/', batch_size=B
 test_generator = BirdCLEF_DataGenerator(test_df, label_dict, 'data/', batch_size=BATCH_SIZE)
 
 a = train_generator[0]
-b = train_generator[1]
+#b = train_generator[1]
 
-print('Dict: ', label_dict)
+#print('Dict: ', label_dict)
 
-print('Wrong sample num: ', train_generator.wrong_sample_num)
+#print('Wrong sample num: ', train_generator.wrong_sample_num)
+
+
+
+print('A SHAPE:')
+
+#print(a)# [sounds][sound of bird in 5 second snipets][sound snipets]
+
+'''def train_model(config=None):
+
+    train_generator = BirdCLEF_DataGenerator(train_df, label_dict, 'data/', batch_size=BATCH_SIZE)
+    val_generator = BirdCLEF_DataGenerator(val_df, label_dict, 'data/', batch_size=BATCH_SIZE)
+    test_generator = BirdCLEF_DataGenerator(test_df, label_dict, 'data/', batch_size=BATCH_SIZE)
+
+    model = Model((160000), len(label_dict))
+
+    checkpoint_callback = pl.callbacks.ModelCheckpoint()
+    early_stop_callback = pl.callbacks.EarlyStopping(monitor="val_acc", patience=3, verbose=False, mode="max")
+
+    trainer = pl.Trainer(max_epochs=10,
+                        callbacks=[checkpoint_callback, early_stop_callback]
+    )
+    # Train the model
+    trainer.fit(model, train_generator)
+
+    # Evaluate the model
+    trainer.test(dataloaders= test_generator)'''
