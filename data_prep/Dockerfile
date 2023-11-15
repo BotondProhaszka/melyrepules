@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 #update apt-get
 RUN apt-get update
 
-CMD ["python", "data_preparation.py"]
+CMD ["python", "traineval.py"]
