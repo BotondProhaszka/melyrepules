@@ -15,21 +15,20 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 
-
-
 def get_label_map(df_column):
     labels = set(df_column)
     label_map = {label: i for i, label in enumerate(labels)}
     print(df_column.value_counts())
     return label_map
 
- # :) -> not really
 
-class BirdCLEF_DataGenerator():
+class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
     def __init__(self, df, label_dict, root_folder, batch_size=10, shuffle=True):
 
         self.train_df = None
         self.batch_size = batch_size
+
+        df = df.sample(frac=1).reset_index(drop=True)
 
         df = self.transform_df(df)
         self.df = df
@@ -167,7 +166,7 @@ def extract_features(audio_path, sr=32000, n_mfcc=13, n_mels=128, n_fft=2048, ho
     return features
 
 
-def linear_regression(dfr, target_column='scientific_name'):
+'''def linear_regression(dfr, target_column='scientific_name'):
     """LinearRegression from dfr dataframe"""
     # target column enkódolása lineáris regresszióhoz
     label_encoder = LabelEncoder()
@@ -211,57 +210,4 @@ def logistic_regression(dfr, target_column='scientific_name'):
     # Modell értékelése
     accuracy = accuracy_score(y_test, predictions)
     print("Accuracy:", accuracy)
-
-
-BATCH_SIZE = 10
-
-df = pd.read_csv('data/train_metadata.csv')
-
-label_dict = get_label_map(df['scientific_name'])
-
-train_df, test_df = train_test_split(df, test_size=0.2, random_state=0)
-train_df, val_df = train_test_split(train_df, test_size=0.25, random_state=0)
-
-print('Train size: ', len(train_df))
-print('Validation size: ', len(val_df))
-print('Test size: ', len(test_df))
-print('Total size: ', len(train_df) + len(val_df) + len(test_df))
-print('Total size2: ', len(df))
-
-train_generator = BirdCLEF_DataGenerator(train_df, label_dict, 'data/', batch_size=BATCH_SIZE)
-val_generator = BirdCLEF_DataGenerator(val_df, label_dict, 'data/', batch_size=BATCH_SIZE)
-test_generator = BirdCLEF_DataGenerator(test_df, label_dict, 'data/', batch_size=BATCH_SIZE)
-
-a = train_generator[0]
-print('A SHAPE: ', a.shape)
-#b = train_generator[1]
-
-#print('Dict: ', label_dict)
-
-#print('Wrong sample num: ', train_generator.wrong_sample_num)
-
-
-
-print('A SHAPE:')
-
-#print(a)# [sounds][sound of bird in 5 second snipets][sound snipets]
-
-'''def train_model(config=None):
-
-    train_generator = BirdCLEF_DataGenerator(train_df, label_dict, 'data/', batch_size=BATCH_SIZE)
-    val_generator = BirdCLEF_DataGenerator(val_df, label_dict, 'data/', batch_size=BATCH_SIZE)
-    test_generator = BirdCLEF_DataGenerator(test_df, label_dict, 'data/', batch_size=BATCH_SIZE)
-
-    model = Model((160000), len(label_dict))
-
-    checkpoint_callback = pl.callbacks.ModelCheckpoint()
-    early_stop_callback = pl.callbacks.EarlyStopping(monitor="val_acc", patience=3, verbose=False, mode="max")
-
-    trainer = pl.Trainer(max_epochs=10,
-                        callbacks=[checkpoint_callback, early_stop_callback]
-    )
-    # Train the model
-    trainer.fit(model, train_generator)
-
-    # Evaluate the model
-    trainer.test(dataloaders= test_generator)'''
+'''
