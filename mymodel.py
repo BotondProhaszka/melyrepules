@@ -1,12 +1,12 @@
 import tensorflow as tf
-from tensorflow.keras import layers
-from tensorflow.keras import models
-import tensorflow.keras.Sequential
+from tensorflow import keras
+from keras import layers, models
+from keras.models import Sequential
 
-BATCH_SIZE = 10
+BATCH_SIZE = 30
 input_shape = (1, 160000)
 print('Input shape:', input_shape)
-num_labels = 67
+num_labels = 243
 
 class MyModel():
     def __init__(self, BATCH_SIZE, input_shape, num_labels):
@@ -15,18 +15,11 @@ class MyModel():
         self.input_shape = input_shape
         self.num_labels = num_labels       
 
-        self.model = models.Sequential([
+        self.model = Sequential([
             layers.Input(shape=self.input_shape),
             # Downsample the input.
-            layers.Resizing(32, 32),
-            layers.Conv2D(32, 3, activation='relu'),
-            layers.Conv2D(64, 3, activation='relu'),
-            layers.MaxPooling2D(),
-            layers.Dropout(0.25),
-            layers.Flatten(),
             layers.Dense(128, activation='relu'),
-            layers.Dropout(0.5),
-            layers.Dense(self.num_labels),
+            layers.Dense(self.num_labels)
         ])
 
         self.model.summary()
@@ -39,10 +32,10 @@ class MyModel():
 
     def train(self, data, val_data, epochs = 100):
         history = self.model.fit(
-            data=data,
+            data,
             validation_data=val_data,
             epochs=epochs,
-            callvacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2)
+            callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2)
         )
         return history
     
@@ -51,4 +44,5 @@ class MyModel():
 
     def predict(self, test_data):
         y_pred = self.model.predict(test_data)
+        y_pred = tf.argmax(y_pred, axis=1)
         return y_pred

@@ -91,7 +91,8 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         return new_df_expanded
 
     def on_epoch_end(self):
-        self.train_df = self.train_df.sample(frac=1).reset_index(drop=True)
+        #self.train_df = self.train_df.sample(frac=1).reset_index(drop=True)
+        pass
 
     def open_wawe(self, filepath):
         audio, sample_rate = librosa.load(self.rootfolder + '/train_audio/' + filepath)
