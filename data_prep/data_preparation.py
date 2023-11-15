@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-import pytorch_lightning as pl
+
 
 
 
@@ -50,12 +50,23 @@ class BirdCLEF_DataGenerator():
         # A hangfájlok betöltése
         sounds = []
         labels = []
+
+        prev_filename = 'tomi_szar_a_felev'
+
         for index, row in batch_df.iterrows():
-            wawe = self.open_wawe(row['filename'])
-            for i in range(len(wawe)):
-                sounds.append(wawe[i])
+            audio_part = row['audio_part']
+            filename = row['filename']
+
+            if prev_filename == filename:
+                sounds.append(wawe[audio_part])
                 labels.append(self.label_dict[row['scientific_name']])
-        
+            else:
+                wawe = self.open_wawe(row['filename'])
+                sounds.append(wawe[audio_part])
+                labels.append(self.label_dict[row['scientific_name']])
+            
+            prev_filename = filename
+
         sounds = tf.convert_to_tensor(sounds)
         print("Get_item - Sound shape: ", sounds.shape)
         labels = tf.convert_to_tensor(labels)
@@ -222,6 +233,7 @@ val_generator = BirdCLEF_DataGenerator(val_df, label_dict, 'data/', batch_size=B
 test_generator = BirdCLEF_DataGenerator(test_df, label_dict, 'data/', batch_size=BATCH_SIZE)
 
 a = train_generator[0]
+print('A SHAPE: ', a.shape)
 #b = train_generator[1]
 
 #print('Dict: ', label_dict)
