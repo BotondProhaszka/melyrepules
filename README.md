@@ -31,6 +31,23 @@ In this file we define a basic neural network model class with an input layer an
 ### data_prep/traineval.py
 
 The whole learning-evaluation process (from loading the data to the evaluation) is defined in this file.
+<br> The following parameters can be used:
+* ```-h, or --help```         shows a help message and exit
+* ```-s, or --database_size```
+                        How big will be the database. All data will be loaded
+                        if its value is 0 (default: 100)
+                        It is important, that this parameter should be the same value as
+                        saved when loading a file
+* ```-bs, or --batch_size```
+                        Batch size (default: 10)
+* ```-if, or --input_filename```
+                        If it's not empty, the script will load a file instead
+                        of creating a new with transform_df. Do not use file
+                        extension! (It's csv) (default: '')
+* ```-of, or --output_filename```
+                        Output filename of transform_df. Only needed
+                        input_filename if is empty. Do not use file extension!
+                        (It's csv) (default: 'saved')
 
 ### data_prep/Dockerfile
 

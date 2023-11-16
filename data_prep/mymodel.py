@@ -8,6 +8,7 @@ input_shape = (1, 160000)
 print('Input shape:', input_shape)
 num_labels = 243
 
+
 class MyModel():
     def __init__(self, BATCH_SIZE, input_shape, num_labels):
         
