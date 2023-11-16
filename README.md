@@ -24,6 +24,13 @@ We downloaded the datapack from the website of the competiton and integrated int
 
 In data_preparation.py file we implemented a basic data generator class in order to make the dataset available to other containers (e.g. models). The data generator class can resample a wave to a desired rate. We create three instances of the generator class: for the training, validation and test datasets.
 
+### data_prep/mymodel.py
+
+In this file we define a basic neural network model class with an input layer and two dense layers.
+
+### data_prep/traineval.py
+
+The whole learning-evaluation process (from loading the data to the evaluation) is defined in this file.
 
 ### data_prep/Dockerfile
 
@@ -46,4 +53,7 @@ Contains the files and librarys we do not intend to upload to github.
 ## How to run
 
 * Install python3 and pip
-* Todo
+* Build the docker image
+* Run the container
+
+The whole pipeline (data loading, model creation, training and evaluation) is included in the [traineval.py](https://github.com/BotondProhaszka/melyrepules/blob/main/data_prep/traineval.py) file. The docker container runs it.
