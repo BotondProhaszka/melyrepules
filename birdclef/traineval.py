@@ -1,4 +1,4 @@
-import data_prep.data_preparation as data_prep
+import birdclef.data_preparation as data_prep
 import baselinemodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
