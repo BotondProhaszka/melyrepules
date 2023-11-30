@@ -1,5 +1,6 @@
 import birdclef.data_preparation as data_prep
 import baselinemodel
+import lstmmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
@@ -33,10 +34,11 @@ input_shape = train_generator[0][0].shape[1:]
 num_labels = len(label_dict)
 
 # init model
-BaselineModel = baselinemodel.BaselineModel(args.batch_size, input_shape, num_labels)
+#model = baselinemodel.BaselineModel(args.batch_size, input_shape, num_labels)
+model = lstmmodel.LSTMModel(num_labels, input_shape)
 # train model
 
-history = BaselineModel.train(train_generator, val_generator, epochs=2)
+history = model.train(train_generator, val_generator, epochs=2)
 print(history.history['accuracy'])
 train_accuracy = history.history['accuracy']
 epochs = list(range(1, len(train_accuracy) + 1))
@@ -50,7 +52,7 @@ plt.show()
 
 # test
 X_test, y_true = test_generator[0]
-y_pred = BaselineModel.predict(X_test)
+y_pred = model.predict(X_test)
 
 # eval metrics
 accuracy = accuracy_score(y_true, y_pred)
