@@ -1,10 +1,20 @@
-import birdclef.data_preparation as data_prep
+import data_preparation as data_prep
 import baselinemodel
 import lstmmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, average_precision_score
+import numpy as np
+
+def padded_cmap_numpy(y_true, y_pred, padding_factor=5):
+    y_true = np.pad(y_true, (padding_factor, 0), constant_values=1)
+    y_pred = np.pad(y_pred, (padding_factor,  0), constant_values=1)
+    return average_precision_score(
+        y_true.astype(int),
+        y_pred,
+        average="macro",
+    )
 
 args = data_prep.args
 print("Running arguments: " + args.__str__())
@@ -54,14 +64,21 @@ plt.show()
 X_test, y_true = test_generator[0]
 y_pred = model.predict(X_test)
 
+#print("y_true:")
+#print(y_true)
+#print("y_pred:")
+#print(y_pred)
+
 # eval metrics
 accuracy = accuracy_score(y_true, y_pred)
 precision = precision_score(y_true, y_pred,
                             average='weighted')  # Use 'micro', 'macro', or 'weighted' as per your requirement
 recall = recall_score(y_true, y_pred, average='weighted')  # Use 'micro', 'macro', or 'weighted' as per your requirement
 f1 = f1_score(y_true, y_pred, average='weighted')  # Use 'micro', 'macro', or 'weighted' as per your requirement
+padded_cmap = padded_cmap_numpy(y_true, y_pred,10)
 
 print('Accuracy: ', accuracy)
 print('Precision: ', precision)
 print('Recall: ', recall)
 print('F1: ', f1)
+print('padded_cmap: ', padded_cmap)
