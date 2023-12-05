@@ -89,6 +89,9 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         print("Get_item - Sound shape: ", sounds.shape)
         labels = tf.convert_to_tensor(labels)
         print("Get_item - Labels shape: ", labels.shape)
+
+        sounds = np.expand_dims(sounds, 1)
+
         return sounds, labels
 
     def get_wawe_len(self, filepath):

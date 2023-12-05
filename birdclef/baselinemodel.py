@@ -45,5 +45,9 @@ class BaselineModel():
 
     def predict(self, test_data):
         y_pred = self.model.predict(test_data)
-        y_pred = tf.argmax(y_pred, axis=1)
+        print("Predictions")
+        print(y_pred)
+        y_pred = tf.argmax(y_pred, axis=-1)
+        print("Argmaxs")
+        print(y_pred)
         return y_pred
