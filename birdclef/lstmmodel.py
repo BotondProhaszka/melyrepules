@@ -2,11 +2,28 @@ import tensorflow as tf
 from tensorflow import keras
 from keras import layers, models
 from keras.models import Sequential
+import numpy as np
+from sklearn.metrics import average_precision_score
 
+def padded_cmap_tensorflow(y_true, y_pred, padding_factor=5):
+    y_pred = tf.argmax(y_pred, axis=-1)
+    def padded_cmap_np(y_true_np, y_pred_np):
+        y_true_padded = np.pad(y_true_np, ((0, padding_factor), (0, 0)), constant_values=1)
+        y_pred_padded = np.pad(y_pred_np, ((0, padding_factor), (0, 0)), constant_values=1)
+
+        # Flatten the arrays
+        y_true_flat = y_true_padded.flatten()
+        y_pred_flat = y_pred_padded.flatten()
+
+        return average_precision_score(y_true_flat.astype(int), y_pred_flat, average="macro")
+    
+    # Use tf.py_function to execute the NumPy operation eagerly
+    result_tensor = tf.py_function(padded_cmap_np, [y_true, y_pred], tf.float32)
+    return result_tensor
 
 class LSTMModel():
     
-    def init (self, num_labels, input_shape, loss = 'category_crossentropy', optimizer = 'adam', metrics = 'accuracy'):
+    def __init__ (self, num_labels, input_shape, loss = 'mean_squared_error', optimizer = 'adam', metrics = 'accuracy'):
 
         self.num_labels = num_labels
         self.input_shape = input_shape
@@ -15,15 +32,14 @@ class LSTMModel():
 
 
         self.model = Sequential([
-            layers.Input(shape=input_shape),
-            layers.LSTM(128, activation='relu'),
+            layers.LSTM(4, input_shape = self.input_shape, activation='relu'),
             layers.Dense(self.num_labels)
         ])
 
         self.model.summary()
         self.model.compile(
             optimizer=optimizer,
-            loss=loss,
+            loss=self.loss,
             metrics=metrics,
         )
 
