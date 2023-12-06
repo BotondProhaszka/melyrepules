@@ -15,6 +15,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import argparse
 
+import matplotlib.pyplot as plt
 
 def argbuilder():
     parser = argparse.ArgumentParser(description='Bird Voice AI Trainer',
@@ -45,7 +46,7 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         self.name = name
         self.train_df = None
         self.batch_size = batch_size
-
+        self.data_analysis(df)
         if args.input_filename == '':
             df = df.sample(frac=1).reset_index(drop=True)
 
@@ -174,6 +175,29 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
             self.wrong_sample_num = self.wrong_sample_num + 1
             waveform = self.resample(waveform, desired_sample_rate, original_sample_rate)
         return desired_sample_rate, waveform
+    
+    def data_analysis(self, df):
+        print("Data analysis started...")
+        auido_letgths = []
+        scientific_names = {}
+        for index, row in df.iterrows():
+            filename = row['filename']
+            audio, sample_rate = librosa.load('data/' + '/train_audio/' + filename)
+            wav_len = librosa.get_duration(y=audio, sr=sample_rate)
+            auido_letgths.append(wav_len)
+            scientific_names[row['scientific_name']] = scientific_names.get(row['scientific_name'], 0) + 1
+        
+        #save histogram into file 
+        plt.hist(auido_letgths, bins=200)
+        plt.xlabel('Audio length (sec)')
+        plt.ylabel('Number of audio files')
+        plt.title(f'Histogram of audio lengths, maximum: {max(auido_letgths)} sec')
+        plt.savefig('histogram.png')
+
+        #save scientific_names into file as a df
+        scientific_names = pd.DataFrame.from_dict(scientific_names, orient='index')
+        scientific_names.to_csv('scientific_names_counts.csv')
+        print("Saved histogram.png and scientific_names_counts.csv")
 
 
 def extract_features(audio_path, sr=32000, n_mfcc=13, n_mels=128, n_fft=2048, hop_length=512):
