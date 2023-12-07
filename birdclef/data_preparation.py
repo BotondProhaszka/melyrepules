@@ -46,7 +46,6 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         self.name = name
         self.train_df = None
         self.batch_size = batch_size
-        self.data_analysis(df)
         if args.input_filename == '':
             df = df.sample(frac=1).reset_index(drop=True)
 
