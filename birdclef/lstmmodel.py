@@ -30,7 +30,6 @@ class LSTMModel():
         self.loss = loss
         self.optimizer = optimizer
 
-
         self.model = Sequential([
             layers.LSTM(4, input_shape = self.input_shape, activation='relu'),
             layers.Dense(self.num_labels)
@@ -58,6 +57,10 @@ class LSTMModel():
             epochs=epochs,
             callbacks=[model_checkpoint_callback]
         )
+
+        self.model.save_weights(checkpoint_filepath)
+        self.model.save(checkpoint_filepath)
+
         return history
         
     def predict(self, test_data):

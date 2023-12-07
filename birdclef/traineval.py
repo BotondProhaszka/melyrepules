@@ -1,6 +1,7 @@
 import data_preparation as data_prep
 import baselinemodel
 import lstmmodel
+import hugging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
@@ -44,8 +45,9 @@ input_shape = train_generator[0][0].shape[1:]
 num_labels = len(label_dict)
 
 # init model
-#model = baselinemodel.BaselineModel(args.batch_size, input_shape, num_labels)
+# model = baselinemodel.BaselineModel(args.batch_size, input_shape, num_labels)
 model = lstmmodel.LSTMModel(num_labels, input_shape)
+# model = hugging.HuggingModel(input_shape, label_dict)
 # train model
 
 history = model.train(train_generator, val_generator, epochs=2)
