@@ -1,4 +1,4 @@
-# Bird Voice AI Trainer Documentation
+# Data generator and data preprocessing
 
 This document provides comprehensive documentation for the Bird Voice AI Trainer script, designed for training a deep learning model on bird vocalization data.
 
@@ -86,3 +86,6 @@ train_generator = BirdCLEF_DataGenerator(train_df, label_dict, 'data/', batch_si
 ```python
 data_gen.data_analysis(df)
 ```
+
+# Reference
+For the structure of the class we used a [tutorial](https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly) by [Shervine Amidi](https://stanford.edu/~shervine/) (data scientist of Stanford University).
