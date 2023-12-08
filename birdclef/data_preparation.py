@@ -7,17 +7,14 @@ import glob
 import math
 
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-from sklearn.preprocessing import LabelEncoder
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
 import argparse
 
 import matplotlib.pyplot as plt
 
 def argbuilder():
+    """
+    Build and parse command-line arguments.
+    """
     parser = argparse.ArgumentParser(description='Bird Voice AI Trainer',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', '--database_size', default=100, type=int,
@@ -42,7 +39,13 @@ def get_label_map(df_column):
 
 
 class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
+    """
+    Data generator class for BirdCLEF training.
+    """
     def __init__(self, df, label_dict, root_folder, name, batch_size=10, shuffle=True):
+        """
+        Initialize the data generator.
+        """
         self.name = name
         self.train_df = None
         self.batch_size = batch_size
@@ -59,13 +62,17 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
             self.df = self.df.sample(frac=1).reset_index(drop=True)
 
     def __len__(self):
+        """
+        Return the number of batches in the sequence.
+        """
         return int(np.ceil(self.n / float(self.batch_size)))
 
     def __getitem__(self, index):
-        # A kívánt indexű sorok kiválasztása
+        """
+        Generate one batch of data.
+        """
         batch_df = self.df.iloc[index * self.batch_size:(index + 1) * self.batch_size]
 
-        # A hangfájlok betöltése
         sounds = []
         labels = []
 
@@ -95,6 +102,9 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         return sounds, labels
 
     def get_wawe_len(self, filepath):
+        """
+        Get the length of the audio file in seconds.
+        """
         try:
             audio, sample_rate = librosa.load('data/' + '/train_audio/' + filepath)
             wav_len = math.ceil(librosa.get_duration(y=audio, sr=sample_rate) / 5)
@@ -105,6 +115,9 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
             return None
 
     def transform_df(self, df):
+        """
+        Transform the input DataFrame based on command-line arguments.
+        """
         if args.input_filename == '':
             new_df = df.copy()
             new_df['audio_length'] = new_df['filename'].apply(lambda x: self.get_wawe_len(filepath=x))
@@ -120,10 +133,15 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         return new_df
 
     def on_epoch_end(self):
-        # self.train_df = self.train_df.sample(frac=1).reset_index(drop=True)
+        """
+        Called at the end of each epoch.
+        """
         pass
 
     def open_wawe(self, filepath):
+        """
+        Open the audio file and return the waveform.
+        """
         audio, sample_rate = librosa.load(self.rootfolder + '/train_audio/' + filepath)
         sample_rate, wav_data = self.ensure_sample_rate(audio, sample_rate)
         wav_data = self.frame_audio(wav_data)
@@ -146,7 +164,9 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         return framed_audio
 
     def resample(self, waveform, desired_sample_rate, original_sample_rate):
-        """Resample waveform if required without tfio."""
+        """
+        Resample waveform if required without tfio.
+        """
         # Kiszámítja a resampled jel hosszát.
         resampled_signal_length = int(len(waveform) * desired_sample_rate / original_sample_rate)
 
@@ -169,13 +189,18 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
 
     def ensure_sample_rate(self, waveform, original_sample_rate,
                            desired_sample_rate=32000):
-        """Resample waveform if required without tfio."""
+        """
+        Ensure the sample rate of the waveform.
+        """
         if original_sample_rate != desired_sample_rate:
             self.wrong_sample_num = self.wrong_sample_num + 1
             waveform = self.resample(waveform, desired_sample_rate, original_sample_rate)
         return desired_sample_rate, waveform
     
     def data_analysis(self, df):
+        """
+        Perform data analysis on the input DataFrame.
+        """
         print("Data analysis started...")
         auido_letgths = []
         scientific_names = {}
@@ -200,7 +225,9 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
 
 
 def extract_features(audio_path, sr=32000, n_mfcc=13, n_mels=128, n_fft=2048, hop_length=512):
-    """Extracting certain features for Linear- and LogisticRegression"""
+    """
+    Extract certain features from an audio file.
+    """
     # Hangfájl betöltése
     y, sr = librosa.load(audio_path, sr=sr)
 
@@ -217,50 +244,3 @@ def extract_features(audio_path, sr=32000, n_mfcc=13, n_mels=128, n_fft=2048, ho
                           np.mean(chroma, axis=1), np.std(chroma, axis=1)))
 
     return features
-
-
-'''def linear_regression(dfr, target_column='scientific_name'):
-    """LinearRegression from dfr dataframe"""
-    # target column enkódolása lineáris regresszióhoz
-    label_encoder = LabelEncoder()
-    y = label_encoder.fit_transform(dfr[target_column])
-
-    # Jellemzők kinyerése minden hangfájlhoz
-    X = [extract_features('data/train_audio/' + row['filename']) for index, row in dfr.iterrows()]
-
-    # Adatok felosztása tanító és teszthalmazra
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-
-    # Lineáris regresszió fitting
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-
-    # Predikció
-    predictions = model.predict(X_test)
-
-    # Modell értékelése
-    mse = mean_squared_error(y_test, predictions)
-    print("Mean Squared Error:", mse)
-
-
-def logistic_regression(dfr, target_column='scientific_name'):
-    """LogisticRegression from dfr dataframe"""
-    y = dfr[target_column]
-
-    # Jellemzők kinyerése minden hangfájlhoz
-    X = [extract_features('data/train_audio/' + row['filename']) for index, row in dfr.iterrows()]
-
-    # Adatok felosztása
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-
-    # Logisztikus regresszió fitting
-    model = LogisticRegression(multi_class='multinomial', solver='lbfgs', max_iter=1000)
-    model.fit(X_train, y_train)
-
-    # Predikció
-    predictions = model.predict(X_test)
-
-    # Modell értékelése
-    accuracy = accuracy_score(y_test, predictions)
-    print("Accuracy:", accuracy)
-'''
