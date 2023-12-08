@@ -87,5 +87,5 @@ train_generator = BirdCLEF_DataGenerator(train_df, label_dict, 'data/', batch_si
 data_gen.data_analysis(df)
 ```
 
-# Reference
+## Reference
 For the structure of the class we used a [tutorial](https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly) by [Shervine Amidi](https://stanford.edu/~shervine/) (data scientist of Stanford University).
