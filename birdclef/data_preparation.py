@@ -61,6 +61,10 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
         if shuffle:
             self.df = self.df.sample(frac=1).reset_index(drop=True)
 
+    def __init__(self):
+        self.wrong_sample_num = 0
+        pass
+
     def __len__(self):
         """
         Return the number of batches in the sequence.
