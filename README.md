@@ -451,3 +451,6 @@ This section provides documentation for the BirdCLEF Audio Classification script
       - F1 Score
       - Custom metric: `padded_cmap` (average precision score with macro averaging and label padding)
 
+## Conclusion
+
+In the end we could not train the model on the whole dataset, because of time limitations. One epoch of the training ran for over 34 hours. But we ran the model on the first 6500 items, with a batch size of 50 for 3 epochs which ran for about 24 hours and reached an accuracy score of roundabout 4%. Sadly, we could not train a more complex neural network because it would have taken even more time. If we had access to more powerful computers we would have added a few more layers of LSTM to the CNN. We tried to improve the results with applying class sampling weights  to the output of the neural network, which increases the probability of the network, predicting the more common bird types. All in all, we created a working pipeline running in a docker file and this creates a modern solution with which a better solution can be created with more computing power and time.
