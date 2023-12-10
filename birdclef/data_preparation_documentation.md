@@ -56,16 +56,16 @@ Class for generating data batches for training a BirdCLEF model. Inherits from `
 
 Function to extract certain features from an audio file.
 
-#### Parameters:
-- `audio_path`: Path to the audio file.
-- `sr`: Sampling rate (default is 32000).
-- `n_mfcc`: Number of MFCC coefficients (default is 13).
-- `n_mels`: Number of mel filterbanks (default is 128).
-- `n_fft`: Number of FFT points (default is 2048).
-- `hop_length`: Hop length for feature extraction (default is 512).
+- Parameters:
+    - `audio_path`: Path to the audio file.
+    - `sr`: Sampling rate (default is 32000).
+    - `n_mfcc`: Number of MFCC coefficients (default is 13).
+    - `n_mels`: Number of mel filterbanks (default is 128).
+    - `n_fft`: Number of FFT points (default is 2048).
+    - `hop_length`: Hop length for feature extraction (default is 512).
 
-#### Returns:
-- `features`: Extracted features for Linear and Logistic Regression.
+- Returns:
+    - `features`: Extracted features for Linear and Logistic Regression.
 
 ## Example Usage
 
