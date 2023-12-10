@@ -347,4 +347,4 @@ This section provides documentation for the BirdCLEF Audio Classification script
       - Custom metric: `padded_cmap` (average precision score with macro averaging and label padding)
 
 ## About hyperparameters
-
+We used manual hyperparameter optimalisation because of our limited resources. We adjusted the parameters based on intuition and with the use of trial and error, on a smaller part of the dataset (we used the first 1000 items of the dataset and ran it for 2 epochs which also took several hours). After running the training, we inspected the model's test results and compared it to our previous results, concluded, what we learned and adjusted the values accordingly. We did this cycle 3-5 times before setteling on our final version of the CNN.
