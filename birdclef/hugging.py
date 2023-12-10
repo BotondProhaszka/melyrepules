@@ -1,6 +1,4 @@
 from huggingface_hub import notebook_login
-from datasets import load_dataset, Audio
-import tensorflow as tf
 from transformers import AutoFeatureExtractor
 import evaluate
 from transformers import AutoModelForAudioClassification, TrainingArguments, Trainer
@@ -8,7 +6,7 @@ import numpy as np
 
 
 class HuggingModel:
-    def __init__(self, input_shape, labels, model_filename):
+    def __init__(self, input_shape, labels):
         self.labels = labels
         self.num_labels = len(labels)
         self.input_shape = input_shape
@@ -19,16 +17,15 @@ class HuggingModel:
             self.id2label[str(i)] = label
 
         notebook_login()
-        self.feature_extractor = AutoFeatureExtractor.from_pretrained(model_filename)
+        self.feature_extractor = AutoFeatureExtractor.from_pretrained("facebook/wav2vec2-base")
         self.accuracy = evaluate.load("accuracy")
 
         self.model = AutoModelForAudioClassification.from_pretrained(
-            model_filename,
+            "facebook/wav2vec2-base",
             num_labels=self.num_labels,
             label2id=self.label2id,
             id2label=self.id2label,
         )
-        self.model.summary()
 
     def preprocess_function(self, examples):
         audio_arrays = [x["array"] for x in examples["audio"]]
@@ -41,7 +38,7 @@ class HuggingModel:
         predictions = np.argmax(eval_pred.predictions, axis=1)
         return self.accuracy.compute(predictions=predictions, references=eval_pred.label_ids)
 
-    def train(self, data, val_data, epochs=100, checkpoint_filepath='saved_model/1', batch_size=30, verbose=1):
+    def train(self, data, val_data):
         training_args = TrainingArguments(
             output_dir="my_awesome_mind_model",
             evaluation_strategy="epoch",

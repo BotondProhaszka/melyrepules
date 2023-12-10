@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, average_precision_score
 import numpy as np
 import tensorflow as tf
+import hugging
 
 def padded_cmap_numpy(y_true, y_pred, padding_factor=5):
     # Pad true and predicted labels to account for potential false positives at the beginning
@@ -33,7 +34,7 @@ if args.database_size != 0:
 label_dict = data_prep.get_label_map(df['scientific_name'])
 
 # Create a dictionary to map numerical labels to class weights
-class_weights = pd.read_csv('scientific_names_counts.csv')
+class_weights = pd.read_csv('../birdclef/scientific_names_counts.csv')
 print(label_dict)
 class_weights['scientific_name'] = class_weights['scientific_name'].map(label_dict)
 class_weights = class_weights.set_index('scientific_name')
@@ -67,24 +68,31 @@ model = None
 
 # Train the model and get training history
 if args.train:
-    model = lstmmodel.LSTMModel(num_labels, input_shape)
-    history = model.train(train_generator, val_generator, class_weights=class_weights, epochs=args.epoch, checkpoint_filepath="./saved_model/" + args.model_filename)
+    if args.hug:
+        model = hugging.HuggingModel(input_shape, label_dict)
+        history = model.train(train_generator, val_generator)
+    else:
+        model = lstmmodel.LSTMModel(num_labels, input_shape)
+        history = model.train(train_generator, val_generator, class_weights=class_weights, epochs=args.epoch,
+                              checkpoint_filepath="./saved_model/" + args.model_filename)
     print(history.history['accuracy'])
 else:
     # Initialize the LSTM model
     loaded_model = tf.keras.models.load_model("./saved_model/" + args.model_filename)
     loaded_model.summary()
 
+
 # Plot training and validation accuracy over epochs
-train_accuracy = history.history['accuracy']
-epochs = list(range(1, len(train_accuracy) + 1))
-plt.plot(epochs, train_accuracy, label='Training Accuracy')
-plt.plot(epochs, history.history['val_accuracy'], label='Validation Accuracy')
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.ylim([0, 1])
-plt.legend(loc='center left')
-plt.show()
+if args.train:
+    train_accuracy = history.history['accuracy']
+    epochs = list(range(1, len(train_accuracy) + 1))
+    plt.plot(epochs, train_accuracy, label='Training Accuracy')
+    plt.plot(epochs, history.history['val_accuracy'], label='Validation Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.ylim([0, 1])
+    plt.legend(loc='center left')
+    plt.show()
 
 # Test the model on the test set
 X_test, y_true = test_generator[0]

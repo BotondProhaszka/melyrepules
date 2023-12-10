@@ -25,6 +25,8 @@ def argbuilder():
                         help='Output filename of the saved model. Do not use file extension (Its h5)')
     parser.add_argument('-t', '--train', help='Training of the model. Evaluation only if "--no-train" set', action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument('-e', '--epoch', default=1, type=int, help='Number of training epochs.')
+    parser.add_argument('-hu', '--hug', help='Use the huggingfacce Audio classifies model for training',
+                        action=argparse.BooleanOptionalAction, default=False)
     return parser.parse_args()
 
 

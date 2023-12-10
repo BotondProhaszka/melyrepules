@@ -126,6 +126,7 @@ The script accepts the following command-line arguments:
 - `-mf` or `--model_filename`: Filename of the model to be saved. Do not use a file extension (It's h5).
 - `-t` or `--train` or `--no-train`: Training of the model. Evaluation only (it means there is no training) if "--no-train" set (default: True)
 - `-e` or `--epochs`: Number of training epochs.
+- `-hu` or `--hug` or `--no-hug`: Use the huggingfacce Audio classifies model for training (default: False)
 
 ## Global functions
 
