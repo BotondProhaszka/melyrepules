@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, average_precision_score
 import numpy as np
+import tensorflow as tf
 
 def padded_cmap_numpy(y_true, y_pred, padding_factor=5):
     # Pad true and predicted labels to account for potential false positives at the beginning
@@ -63,12 +64,17 @@ test_generator = data_prep.BirdCLEF_DataGenerator(test_df, label_dict, 'data/', 
 input_shape = train_generator[0][0].shape[1:]
 num_labels = len(label_dict)
 
-# Initialize the LSTM model
-model = lstmmodel.LSTMModel(num_labels, input_shape)
+model = None
 
 # Train the model and get training history
-history = model.train(train_generator, val_generator, class_weights=class_weights, epochs=2)
-print(history.history['accuracy'])
+if args.train:
+    model = lstmmodel.LSTMModel(num_labels, input_shape)
+    history = model.train(train_generator, val_generator, class_weights=class_weights, epochs=args.epoch, checkpoint_filepath="./saved_model/" + args.model_filename)
+    print(history.history['accuracy'])
+else:
+    # Initialize the LSTM model
+    loaded_model = tf.keras.models.load_model("./saved_model/" + args.model_filename)
+    loaded_model.summary()
 
 # Plot training and validation accuracy over epochs
 train_accuracy = history.history['accuracy']

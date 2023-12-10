@@ -7,7 +7,6 @@ from transformers import AutoModelForAudioClassification, TrainingArguments, Tra
 import numpy as np
 
 
-# TODO: UNTESTED! Test after finished training
 class HuggingModel:
     def __init__(self, input_shape, labels):
         self.labels = labels
