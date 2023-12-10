@@ -11,6 +11,7 @@ This Python script is designed for audio classification using the BirdCLEF datas
    - Optionally limits the dataset size with the `-s` or `--database_size` command-line argument.
    - Splits the dataset into training, validation, and test sets.
    - Creates data generators for each set.
+   - Calculating a class_weights dictionary to handle unbalanced samples
 
 ### 2. Model Architecture
    - Implements three model architectures: `BaselineModel`, `LSTMModel`, and `HuggingModel`.

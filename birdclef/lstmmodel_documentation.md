@@ -48,6 +48,7 @@ Returns:
     - `val_data`: Validation data generator.
     - `epochs` (optional): Number of training epochs (default is 100).
     - `checkpoint_filepath` (optional): Path to save model checkpoints (default is 'saved_model/1').
+    - `class_weights` (optional): Class weights for imbalanced data (default is None).
     - `batch_size` (optional): Batch size for training (default is 30).
     - `verbose` (optional): Verbosity mode (default is 1).
 

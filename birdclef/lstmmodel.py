@@ -94,7 +94,7 @@ class LSTMModel():
             metrics=metrics,
         )
 
-    def train(self, data, val_data, epochs=100, checkpoint_filepath='saved_model/1', batch_size=30, verbose=1):
+    def train(self, data, val_data, epochs=100, checkpoint_filepath='saved_model/1', class_weights=None,  batch_size=30, verbose=1):
         """
         Trains the model on the provided training data.
 
@@ -103,6 +103,7 @@ class LSTMModel():
         - val_data (tf.keras.utils.Sequence): Validation data generator.
         - epochs (int): Number of training epochs (default is 100).
         - checkpoint_filepath (str): Path to save model checkpoints (default is 'saved_model/1').
+        - class_weights (dict): Class weights for imbalanced data (default is None).
         - batch_size (int): Batch size for training (default is 30).
         - verbose (int): Verbosity mode (default is 1).
 
