@@ -8,7 +8,7 @@ import numpy as np
 
 
 class HuggingModel:
-    def __init__(self, input_shape, labels):
+    def __init__(self, input_shape, labels, model_filename):
         self.labels = labels
         self.num_labels = len(labels)
         self.input_shape = input_shape
@@ -19,11 +19,11 @@ class HuggingModel:
             self.id2label[str(i)] = label
 
         notebook_login()
-        self.feature_extractor = AutoFeatureExtractor.from_pretrained("saved_model/1")
+        self.feature_extractor = AutoFeatureExtractor.from_pretrained(model_filename)
         self.accuracy = evaluate.load("accuracy")
 
         self.model = AutoModelForAudioClassification.from_pretrained(
-            "saved_model/1",
+            model_filename,
             num_labels=self.num_labels,
             label2id=self.label2id,
             id2label=self.id2label,
