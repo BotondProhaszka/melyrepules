@@ -1,9 +1,6 @@
-import random
 import pandas as pd
 import numpy as np
-import os
 import librosa
-import glob
 import math
 
 import tensorflow as tf
@@ -39,6 +36,55 @@ def get_label_map(df_column):
     label_map = {label: i for i, label in enumerate(labels)}
     print(df_column.value_counts())
     return label_map
+
+def data_analysis(df):
+        """
+        Perform data analysis on the input DataFrame.
+        """
+        print("Data analysis started...")
+        auido_legths = []
+        scientific_names = {}
+        for index, row in df.iterrows():
+            filename = row['filename']
+            audio, sample_rate = librosa.load('data/' + '/train_audio/' + filename)
+            wav_len = librosa.get_duration(y=audio, sr=sample_rate)
+            auido_legths.append(wav_len)
+            scientific_names[row['scientific_name']] = scientific_names.get(row['scientific_name'], 0) + 1
+        
+
+        #save histogram into file 
+        plt.hist(auido_legths, bins=200)
+        plt.xlabel('Audio length (sec)')
+        plt.ylabel('Number of audio files')
+        plt.title(f'Histogram of audio lengths, maximum: {max(auido_legths)} sec')
+        plt.savefig('histogram.png')
+
+        #save scientific_names into file as a df
+        scientific_names = pd.DataFrame.from_dict(scientific_names, orient='index')
+        scientific_names.to_csv('scientific_names_counts.csv')
+        print("Saved histogram.png and scientific_names_counts.csv")
+
+def extract_features(audio_path, sr=32000, n_mfcc=13, n_mels=128, n_fft=2048, hop_length=512):
+    """
+    Extract certain features from an audio file.
+    """
+    # Hangfájl betöltése
+    y, sr = librosa.load(audio_path, sr=sr)
+
+    # Tulajdonságok kinyerése
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
+    mel = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length)
+    zcr = librosa.feature.zero_crossing_rate(y, frame_length=n_fft, hop_length=hop_length)
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr, n_fft=n_fft, hop_length=hop_length)
+
+    # Az összes jellemző átlagának és szórásának kinyerése
+    features = np.hstack((np.mean(mfcc, axis=1), np.std(mfcc, axis=1),
+                          np.mean(mel, axis=1), np.std(mel, axis=1),
+                          np.mean(zcr), np.std(zcr),
+                          np.mean(chroma, axis=1), np.std(chroma, axis=1)))
+
+    return features
+    
 
 
 class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
@@ -202,51 +248,3 @@ class BirdCLEF_DataGenerator(tf.keras.utils.Sequence):
             waveform = self.resample(waveform, desired_sample_rate, original_sample_rate)
         return desired_sample_rate, waveform
     
-
-def data_analysis(df):
-        """
-        Perform data analysis on the input DataFrame.
-        """
-        print("Data analysis started...")
-        auido_legths = []
-        scientific_names = {}
-        for index, row in df.iterrows():
-            filename = row['filename']
-            audio, sample_rate = librosa.load('data/' + '/train_audio/' + filename)
-            wav_len = librosa.get_duration(y=audio, sr=sample_rate)
-            auido_legths.append(wav_len)
-            scientific_names[row['scientific_name']] = scientific_names.get(row['scientific_name'], 0) + 1
-        
-
-        #save histogram into file 
-        plt.hist(auido_legths, bins=200)
-        plt.xlabel('Audio length (sec)')
-        plt.ylabel('Number of audio files')
-        plt.title(f'Histogram of audio lengths, maximum: {max(auido_legths)} sec')
-        plt.savefig('histogram.png')
-
-        #save scientific_names into file as a df
-        scientific_names = pd.DataFrame.from_dict(scientific_names, orient='index')
-        scientific_names.to_csv('scientific_names_counts.csv')
-        print("Saved histogram.png and scientific_names_counts.csv")
-
-def extract_features(audio_path, sr=32000, n_mfcc=13, n_mels=128, n_fft=2048, hop_length=512):
-    """
-    Extract certain features from an audio file.
-    """
-    # Hangfájl betöltése
-    y, sr = librosa.load(audio_path, sr=sr)
-
-    # Tulajdonságok kinyerése
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
-    mel = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length)
-    zcr = librosa.feature.zero_crossing_rate(y, frame_length=n_fft, hop_length=hop_length)
-    chroma = librosa.feature.chroma_stft(y=y, sr=sr, n_fft=n_fft, hop_length=hop_length)
-
-    # Az összes jellemző átlagának és szórásának kinyerése
-    features = np.hstack((np.mean(mfcc, axis=1), np.std(mfcc, axis=1),
-                          np.mean(mel, axis=1), np.std(mel, axis=1),
-                          np.mean(zcr), np.std(zcr),
-                          np.mean(chroma, axis=1), np.std(chroma, axis=1)))
-
-    return features

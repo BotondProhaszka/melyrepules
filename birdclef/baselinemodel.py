@@ -2,11 +2,6 @@ import tensorflow as tf
 from keras import layers
 from keras.models import Sequential
 
-# Global constants
-BATCH_SIZE = 30
-input_shape = (1, 160000)
-print('Input shape:', input_shape)
-num_labels = 243
 
 class BaselineModel():
     """

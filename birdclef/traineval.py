@@ -1,5 +1,4 @@
 import data_preparation as data_prep
-import baselinemodel
 import lstmmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
