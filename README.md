@@ -2,19 +2,29 @@
 
 ## Participants
 
-* Antal Péter  ZE4SG8
-* Liska Tamás  IWGB4I
-* Prohászka Botond Bendegúz  DG1647
+* Antal Péter  (ZE4SG8)
+* Liska Tamás  (IWGB4I)
+* Prohászka Botond Bendegúz  (DG1647)
 
 ## Description
 
-Participate in https://www.kaggle.com/competitions/birdclef-2023 and achive as good result as possible.
+Participate in [BirdCLEF](https://www.kaggle.com/competitions/birdclef-2023) and achive as good result as possible.
 
 ### The competition  
 
 Birds are excellent indicators of biodiversity change since they are highly mobile and have diverse habitat requirements. Changes in species assemblage and the number of birds can thus indicate the success or failure of a restoration project. However, frequently conducting traditional observer-based bird biodiversity surveys over large areas is expensive and logistically challenging. In comparison, passive acoustic monitoring (PAM) combined with new analytical tools based on machine learning allows conservationists to sample much greater spatial scales with higher temporal resolution and explore the relationship between restoration interventions and biodiversity in depth.
 
 For this competition, you'll use your machine-learning skills to identify Eastern African bird species by sound. Specifically, you'll develop computational solutions to process continuous audio data and recognize the species by their calls. The best entries will be able to train reliable classifiers with limited training data. If successful, you'll help advance ongoing efforts to protect avian biodiversity in Africa, including those led by the Kenyan conservation organization NATURAL STATE.
+
+## Usage
+
+### Training
+
+TODO
+
+### Only predicting
+
+TODO
 
 ## Function of the files in the repository
 
