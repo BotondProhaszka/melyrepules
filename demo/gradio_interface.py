@@ -86,7 +86,7 @@ num_dict = defaultdict(int)
 for key, value in label_dict.items():
     num_dict[value] = key
 demo = gr.Interface(fn=recogniseBird, inputs="file", outputs="text")
-model_path = "../saved_model/2"
+model_path = "model/"
 model = load_model(model_path)
 
 if __name__ == "__main__":
