@@ -23,11 +23,34 @@ For this competition, you'll use your machine-learning skills to identify Easter
 
 ### Training
 
-TODO
+For training you need to run the data_prep docker container.
+```bash
+cd path/to/melyrepules/birdclef
+docker build -t traineval -f data_prep/Dockerfile .
+docker run -it -rm traineval
+```
+
+If you want to train the model with other parameters you can modify the Dockerfile.
+
+```Dockerfile
+CMD ["python", "traineval.py", "-s", "500", "-bs", "50", "-of", "500"]
+```
 
 ### Only predicting
 
-TODO
+To use the modell to predict or demo you need to run the demo docker container.
+```bash
+cd path/to/melyrepules/demo
+docker build -t demo -f demo/Dockerfile .
+docker run -it -rm demo
+```
+
+After the docker container is running you can open 7860 port in your browser and you can see the demo.
+
+The UI of the demo is seen below.
+
+![](./demo/UI.png)
+
 
 ## Function of the files in the repository
 
