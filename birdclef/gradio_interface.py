@@ -4,6 +4,7 @@ import data_preparation as data_prep
 from keras.models import load_model
 import numpy as np
 import tensorflow as tf
+import pandas as pd
 
 def make_batches(data, batch_size):
     batches = []
@@ -34,9 +35,9 @@ def recogniseBird(file):
     most_common_label = max(prediction_counts, key=prediction_counts.get)
     return most_common_label
 
-data_generator = data_prep.BirdCLEF_DataGenerator()
+data_generator = data_prep.BirdCLEF_DataGenerator(pd.DataFrame(), {},"","generator")
 demo = gr.Interface(fn=recogniseBird, inputs="file", outputs="text")
-model_path = "./saved_model/1"
+model_path = "../saved_model/2"
 model = load_model(model_path)
 
 if __name__ == "__main__":
