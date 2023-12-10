@@ -22,9 +22,9 @@ def argbuilder():
     parser.add_argument('-of', '--output_filename', default='saved', type=str,
                         help='Output filename of transform_df. Only needed input_filename if is empty. Do not use file extension (Its csv)')
     parser.add_argument('-mf', '--model_filename', default='saved', type=str,
-                        help='Output filename of the saved model. Do not use file extension')
+                        help='Output filename of the saved model. Do not use file extension (Its h5)')
     parser.add_argument('-t', '--train', help='Training of the model. Evaluation only if "--no-train" set', action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument('-e', '--epoch', default=1, type=int, help='Number of epochs. 1 by default.')
+    parser.add_argument('-e', '--epoch', default=1, type=int, help='Number of training epochs.')
     return parser.parse_args()
 
 

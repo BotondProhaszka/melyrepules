@@ -118,11 +118,13 @@ This section provides comprehensive documentation for the Bird Voice AI Trainer 
 
 The script accepts the following command-line arguments:
 
+- `-h` or `--help`: show the help message and exit
 - `-s` or `--database_size`: How big will be the database. All data will be loaded if its value is 0.
 - `-bs` or `--batch_size`: Batch size for training.
 - `-if` or `--input_filename`: If not empty, the script will load a file instead of creating a new one with `transform_df`. Do not use a file extension (It's csv).
 - `-of` or `--output_filename`: Output filename of `transform_df`. Only needed if `input_filename` is empty. Do not use a file extension (It's csv).
 - `-mf` or `--model_filename`: Filename of the model to be saved. Do not use a file extension (It's h5).
+- `-t` or `--train` or `--no-train`: Training of the model. Evaluation only (it means there is no training) if "--no-train" set (default: True)
 - `-e` or `--epochs`: Number of training epochs.
 
 ## Global functions
