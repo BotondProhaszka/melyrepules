@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 #update apt-get
 RUN apt-get update
 
-CMD ["python", "traineval.py"]
+CMD ["python", "traineval.py", "-s", "500", "-bs", "50", "-of", "500"]
