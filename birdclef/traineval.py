@@ -65,6 +65,7 @@ input_shape = train_generator[0][0].shape[1:]
 num_labels = len(label_dict)
 
 model = None
+history = None
 
 # Train the model and get training history
 if args.train:

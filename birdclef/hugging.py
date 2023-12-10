@@ -40,7 +40,7 @@ class HuggingModel:
 
     def train(self, data, val_data):
         training_args = TrainingArguments(
-            output_dir="my_awesome_mind_model",
+            output_dir="bird_model",
             evaluation_strategy="epoch",
             save_strategy="epoch",
             learning_rate=3e-5,
