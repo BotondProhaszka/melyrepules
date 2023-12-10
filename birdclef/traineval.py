@@ -32,6 +32,18 @@ if args.database_size != 0:
 # Create a dictionary to map scientific names to numerical labels
 label_dict = data_prep.get_label_map(df['scientific_name'])
 
+# Create a dictionary to map numerical labels to class weights
+class_weights = pd.read_csv('scientific_names_counts.csv')
+print(label_dict)
+class_weights['scientific_name'] = class_weights['scientific_name'].map(label_dict)
+class_weights = class_weights.set_index('scientific_name')
+class_weights = class_weights.to_dict()['counts']
+
+#Scale weights
+total = sum(class_weights.values())
+num_classes = len(class_weights)
+class_weights = {key: (1 / value) * (total / num_classes) for key, value in class_weights.items()}
+
 # Split the dataset into training, validation, and testing sets
 train_df, test_df = train_test_split(df, test_size=0.2, random_state=0)
 train_df, val_df = train_test_split(train_df, test_size=0.25, random_state=0)
@@ -55,7 +67,7 @@ num_labels = len(label_dict)
 model = lstmmodel.LSTMModel(num_labels, input_shape)
 
 # Train the model and get training history
-history = model.train(train_generator, val_generator, epochs=2)
+history = model.train(train_generator, val_generator, class_weights=class_weights, epochs=2)
 print(history.history['accuracy'])
 
 # Plot training and validation accuracy over epochs

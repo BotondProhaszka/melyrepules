@@ -58,7 +58,7 @@ class LSTMModel():
     - load(self, path): Loads a pre-trained model from the specified path.
     """
     
-    def __init__(self, num_labels, input_shape, loss='mean_squared_error', optimizer='adam', metrics='accuracy'):
+    def __init__(self, num_labels, input_shape, loss='mean_squared_error', optimizer='adam', metrics='accuracy', class_weights=None):
         """
         Initializes the LSTMModel object.
 
@@ -68,12 +68,15 @@ class LSTMModel():
         - loss (str): Loss function for model training (default is 'mean_squared_error').
         - optimizer (str): Optimizer for model training (default is 'adam').
         - metrics (str): Evaluation metrics for model training (default is 'accuracy').
+        - class_weights (dict): Class weights for imbalanced data (default is None).
         """
         # Initialize model parameters
         self.num_labels = num_labels
         self.input_shape = input_shape
         self.loss = loss
         self.optimizer = optimizer
+        self.metrics = metrics
+        self.class_weights = class_weights
 
         # Define LSTM model architecture
         self.model = Sequential([
@@ -119,7 +122,10 @@ class LSTMModel():
             data,
             validation_data=val_data,
             epochs=epochs,
-            callbacks=[model_checkpoint_callback]
+            callbacks=[model_checkpoint_callback],
+            class_weight=self.class_weights,
+            batch_size=batch_size,
+            verbose=verbose
         )
 
         # Save model weights and the entire model
