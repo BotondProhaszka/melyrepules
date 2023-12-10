@@ -85,3 +85,6 @@ Returns:
 
     Parameters:
     - `path`: Path to the saved model.
+
+## References
+To use `class_weights` we used a [tutorial](https://www.tensorflow.org/tutorials/structured_data/imbalanced_data#class_weights) by the original documentation of [TensorFlow](https://www.tensorflow.org/).
