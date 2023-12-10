@@ -24,7 +24,10 @@ def argbuilder():
                         help='If its not empty, the script will load a file instead of creating a new with transform_df. Do not use file extension (Its csv)')
     parser.add_argument('-of', '--output_filename', default='saved', type=str,
                         help='Output filename of transform_df. Only needed input_filename if is empty. Do not use file extension (Its csv)')
-    # parser.add_argument('-b', '--boolean_example', help='', action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument('-mf', '--model_filename', default='saved', type=str,
+                        help='Output filename of the saved model. Do not use file extension')
+    parser.add_argument('-t', '--train', help='Training of the model. Evaluation only if "--no-train" set', action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument('-e', '--epoch', default=1, type=int, help='Number of epochs. 1 by default.')
     return parser.parse_args()
 
 
