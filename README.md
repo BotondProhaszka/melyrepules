@@ -61,6 +61,17 @@ Describes each library version required in the project.
 
 Contains the files and librarys we do not intend to upload to github.
 
+## About the data
+
+The data set contains 16941 soundfiles of bird voices. The distribution of the length of th soundfiles are seen on this histogram. 
+
+![](./birdclef/histogram.png) 
+
+There are 264 different kind of birds. The distribution of the number of samples in the classes are seen below.
+
+![](./birdclef/hist_classes.png)
+
+
 ## Related works
 * The [dataset](https://www.kaggle.com/competitions/birdclef-2023/data)
 * [Opening and resampling the waves](https://www.kaggle.com/code/philculliton/inferring-birds-with-kaggle-models)
